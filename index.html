@@ -3,11 +3,30 @@
   <head>
     <meta charset="utf-8">
     <title>Flowchart</title>
+
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1> Flowchart alpha 0.01 </h1>
 
-  </body>
+    <script src="fabric.js"></script>
+
+
+    <h1> Flowchart alpha 0.01 </h1>
+<button id="rect" onclick="rectFun()">Rect</button>
+<!--<button id="circ" onclick="circFun()">Circ</button>-->
+
+<button id="save">Save</button>
+<input type="text" id="text" />
+<br>
+<canvas id="canvas" width="400" height="400"></canvas>
+<br>
+<p class="save">
+</p>
+<script src="main.js"></script>
+<!--<script>
+  var canvas = new fabric.Canvas('canvas');
+  canvas.add(new fabric.Circle({ radius: 30, fill: '#000', top: 100, left: 100}));
+</script>-->
+
 </html>
 <!DOCTYPE html>
-
