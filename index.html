@@ -3,10 +3,56 @@
   <head>
     <meta charset="utf-8">
     <title>Flowchart</title>
-  </head>
-  <body>
-    <h1> Flowchart alpha 0.01 </h1>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="node_modules/paper/dist/docs/assets/js/paper.js"></script>
+    <!-- Define inlined JavaScript -->
+    <script type="text/javascript">
+      // Only executed our code once the DOM is ready.
+      window.onload = function() {
+        // Get a reference to the canvas object
+        let canvas = document.getElementById('myCanvas');
+        // Create an empty project and a view for the canvas:
+        paper.setup(canvas);
+        with (paper) {
+          // Create a Paper.js Path to draw a line into it:
+        let path = new Path();
+        // Give the stroke a color
+        path.strokeColor = 'black';
+        let start = new Point(100, 100);
+        // Move to start and draw a line from there
+        path.moveTo(start);
+        // Note that the plus operator on Point objects does not work
+        // in JavaScript. Instead, we need to call the add() function:
+        path.lineTo(1000, 100);
+        // Draw the view now:
 
+        let myPath = new Path({
+            segments: [[40, 115], [80, 180], [200, 20]],
+            selected: true
+        });
+
+        myPath.fillColor = '#ff0000';
+
+        myRectPath = new Path.Rectangle(500, 300, 350, 200);
+        myRectPath.fillColor = 'purple';
+        myRectPath.strokeColor = 'green';
+        myRectPath.strokeWidth = 15;
+
+
+        //below not working
+        let mousePath = new Path();
+        mousePath.strokeColor = 'red';
+        function onMouseDown(event) {
+          mousePath.add(event.point);
+        }
+
+        view.draw();
+        }
+      }
+    </script>
+    </head>
+  <body>
+    <canvas id="myCanvas" resize="true"></canvas>
   </body>
 </html>
 <!DOCTYPE html>
