@@ -1,0 +1,209 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script language="Javascript" type="text/javascript" src="lib/edit_area/edit_area_full.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+		width: 100%;
+		font-family: Verdana;
+		font-size: 13px;
+	}
+	#navigation-container {
+		position: absolute;
+		display: block;
+		padding: 0px;
+		margin: 0px;
+		left: 0px;
+		top: 0px;
+		width: 20%;
+		height: 100%;
+	}
+	UL.navigation {
+		display: block;
+		padding: 0px;
+		margin: 0px;
+		height: 100%;
+		background-color: #0A0A0A;
+		border-right: 4px solid #002255;
+	}
+	UL.navigation LI {
+		display: block;
+		line-height: 28px;
+		margin: 0px;
+		padding: 0px;
+		background-color: #0A0A0A;
+		border-top: 1px solid #121212;
+		border-right: 1px solid #000000;
+		border-bottom: 1px solid #000000;
+	}
+	UL.navigation LI A {
+		display: block;
+		padding: 0px 10px 0px 10px;
+		line-height: 28px;
+		font-family: Tahoma, Geneva, sans-serif;
+		line-height: 28px;
+		color: #FFFFFF;
+		font-size: 13px;
+		font-weight: bold;
+		text-decoration: none;
+		text-shadow: 1px 1px 1px #000000;
+		outline: none;
+	}
+	UL.navigation LI.active {
+		background-color: #002255;
+		border-right: none;
+	}
+	#editor-tip {
+		position: absolute;
+		bottom: 0px;
+		padding: 10px;
+		color: #AAAAAA;
+		font-style: italic;
+		text-align: center;
+		background-color: #111111;
+		margin-right: 4px;
+		border-top: 1px solid #000000;
+	}
+	#render-frame {
+		position: absolute;
+		left: 20%;
+		top: 0px;
+		width: 80%;
+		height: 40%;
+		margin: 0px;
+		padding: 0px;
+		border: none;
+	}
+	#source-container {
+		position: absolute;
+		left: 20%;
+		top: 40%;
+		width: 80%;
+		height: 59%; /* chrome makes it too big, fix it */
+		margin: 0px;
+		padding: 0px;
+		border: none;
+		background-color: #000000;
+	}
+	#source-container DIV {
+		border-top: 4px solid #002255;
+	}
+	#source-code {
+		padding: 0px;
+		margin: 0px;
+		border: none;
+		width: 100%;
+		height: 100%;
+		background-color: transparent;
+		color: #FFFFFF;
+	}
+
+	</style>
+</head>
+<body>
+	<div id="navigation-container">
+		<ul class="navigation" id="navigation">
+			<li class="active"><a href="hello-world.html" target="render-frame">HELLO WORLD</a></li>
+			<li><a href="primitives.html" target="render-frame">PRIMITIVES</a></li>
+			<li><a href="aligning.html" target="render-frame">ALIGNING</a></li>
+			<li><a href="shadows.html" target="render-frame">SHADOWS</a></li>
+			<li><a href="gradients.html" target="render-frame">GRADIENTS</a></li>
+			<li><a href="composite-operations.html" target="render-frame">COMPOSITE OPERATIONS</a></li>
+			<li><a href="layers.html" target="render-frame">LAYERS</a></li>
+			<li><a href="mouse-events.html" target="render-frame">MOUSE EVENTS</a></li>
+			<li><a href="box2d.html" target="render-frame">BOX2D PHYSICS</a></li>
+			<li><a href="touch-real.html" target="render-frame">REAL TOUCH</a></li>
+			<li><a href="touch-emulated.html" target="render-frame">EMULATED TOUCH</a></li>
+			<li><a href="multitouch.html" target="render-frame">MULTITOUCH</a></li>
+			<li><a href="tic-tac-toe.html" target="render-frame">TIC-TAC-TOE EXAMPLE</a></li>
+			<li><a href="chess-grid.html" target="render-frame">CHESS GRID EXAMPLE</a></li>
+		</ul>
+		<div id="editor-tip">
+			Changes made to the code on the right are automatically applied.
+		</div>
+	</div>
+	<iframe id="render-frame" name="render-frame" src="" frameborder="0"></iframe>
+	<div id="source-container">
+		<div>
+			<textarea id="source-code" cols="10" rows="10"></textarea>
+		</div>
+	</div>
+	<script type="text/javascript">
+
+		var lastContent = null;
+
+		document.getElementById('render-frame').src = 'hello-world.html';
+
+		document.getElementById('render-frame').onload = function() {
+			var iframeDocument = document.getElementById('render-frame').contentWindow.document;
+			var iframeContent = iframeDocument.body.innerHTML;
+
+			document.getElementById('source-code').value = iframeContent;
+			editAreaLoader.setValue('source-code', iframeContent);
+			lastContent = iframeContent;
+		}
+
+		editAreaLoader.init({
+			id: 'source-code',
+			start_highlight: true,
+			allow_resize: 'no',
+			allow_toggle: false,
+			word_wrap: false,
+			language: 'en',
+			syntax: 'js',
+			toolbar: '|'
+		});
+
+		window.setInterval(function() {
+			var newContent = editAreaLoader.getValue('source-code');
+
+			if (newContent != lastContent) {
+				document.getElementById('render-frame').contentWindow.document.body.innerHTML = newContent;
+
+				var docScript = document.getElementById('render-frame').contentWindow.document.getElementsByTagName('script')[1].innerHTML;
+
+				try {
+					document.getElementById('render-frame').contentWindow.eval(docScript);
+					lastContent = newContent;
+				} catch (e) {
+					document.getElementById('render-frame').contentWindow.document.body.innerHTML = lastContent;
+					var docScript = document.getElementById('render-frame').contentWindow.document.getElementsByTagName('script')[1].innerHTML
+					document.getElementById('render-frame').contentWindow.eval(docScript);
+				}
+			}
+		}, 1000);
+
+		var naviItems = document.getElementById('navigation').childNodes;
+		var activeNavi = null;
+
+		for (var i = 0; i < naviItems.length; i++) {
+			var naviItem = naviItems[i];
+
+			if (naviItem.nodeName == 'LI') {
+				if (naviItem.className == 'active') {
+					activeNavi = naviItem;
+				}
+
+				naviItem.onclick = function() {
+					activeNavi.className = '';
+					this.className = 'active';
+					activeNavi = this;
+				}
+			}
+		}
+
+	</script>
+</body>
+</html>

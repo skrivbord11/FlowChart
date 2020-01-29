@@ -1,0 +1,12 @@
+06.22.2010 - Version 1.2
+- Refactored the code to be better contained
+- Added jQuery style extension system
+- Started using YUI compressor, got smaller filesize
+
+06.22.2010 - Version 1.1
+- Fixed and improved the layers system
+- Improved some demos
+
+03.11.2010 - Version 1.0
+- First commit, the initial version of the library with the examples.
+- Updated the ignore list.

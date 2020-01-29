@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Primitives</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+
+	new Canvas('canvas', 0, function() {
+		// Clear the canvas
+		this.clear();
+		
+		// Draw couple of grids to see where things are
+		this.strokeStyle('#333333');        // Set the stroke color, accepts valid css rules
+		this.grid(10, 10);                  // Draw the darker grid below with step 10x10 at 0x0 using full width and height
+		this.strokeStyle('rgb(0, 128, 0)'); // Styles also take color values rgb-style
+		this.grid(50, 50);                  // Draw another grid with 50x50 step on top of it
+
+		// Draw a filled rectangle at 50x50 with size 100x50
+		this.fillRect(50, 50, 100, 50);
+
+		// Draw just the blue outline of a rectangle below the filled one
+		this.strokeStyle('#0000FF');
+		this.strokeRect(50, 150, 100, 50);
+
+		// Draw a filled circle with top-left corner at 200x50 and diameter of 50
+		this.fillCircle(200, 50, 25);
+
+		// Set the stroke to 10px wide dark green
+		this.strokeStyle('#006600', 10);
+		
+		// Stroke a circle with this style
+		this.strokeCircle(200, 150, 25);
+
+		// Draw a filled arc segment with radius of 25 from 0 to 270 degrees
+		this.fillArc(300, 50, 25, 0, 270);
+
+		// To use radians as angle, use the rad(radians) function
+		this.strokeArc(300, 150, 25, rad(Math.PI), rad(Math.PI * 2));
+
+		// Fill an ellipse with width of 100 and height of 50 at 400x50
+		this.fillEllipse(400, 50, 100, 50);
+
+		// Stroke another one
+		this.strokeEllipse(400, 150, 100, 50);
+
+		// Stroke a line from 500x50 to 600x150, using default cap style (butt)
+		this.strokeLine(550, 50, 550, 150);
+
+		// Draw another line with round cap
+		this.lineCap(CAP.ROUND);
+		this.strokeLine(600, 50, 600, 150);
+
+		// Draw square cap
+		this.lineCap(CAP.SQUARE);
+		this.strokeLine(650, 50, 650, 150);
+
+		// Draw butt cap
+		this.lineCap(CAP.BUTT);
+		this.strokeLine(700, 50, 700, 150);
+
+		// Not a native primitive but still
+		this.fillRoundedRect(750, 50, 75, 75, 25);
+
+		this.strokeRoundedRect(750, 150, 75, 75, 25);
+	});
+
+    </script>
+</body>
+</html>

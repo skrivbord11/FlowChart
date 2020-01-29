@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Aligning</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+
+	new Canvas('canvas', 0, function() {
+		// Clear the canvas
+		this.clear();
+		
+		// Draw a cross at 150x100
+		this.strokeLine(150, 0, 150, this.height);
+		this.strokeLine(350, 0, 350, this.height);
+		this.strokeLine(550, 0, 550, this.height);
+		this.strokeLine(750, 0, 750, this.height);
+		this.strokeLine(0, 100, this.width, 100);
+
+		// Draw nine rectangles using all possible aligning options
+		this.fillStyle('rgba(0, 0, 255, 0.5)');
+		this.fillRect(150, 100, 100, 50); // ALIGN.LEFT.TOP is the default alignment
+
+		this.fillStyle('rgba(0, 255, 0, 0.5)');
+		this.fillRect(150, 100, 100, 50, ALIGN.LEFT.MIDDLE);
+
+		this.fillStyle('rgba(255, 0, 0, 0.5)');
+		this.fillRect(150, 100, 100, 50, ALIGN.LEFT.BOTTOM);
+
+		this.fillStyle('rgba(0, 0, 255, 0.5)');
+		this.fillArc(350, 100, 25, 0, 270, false, ALIGN.CENTER.TOP);
+
+		this.fillStyle('rgba(0, 255, 0, 0.5)');
+		this.fillArc(350, 100, 25, 0, 270, false, ALIGN.CENTER.MIDDLE);
+
+		this.fillStyle('rgba(255, 0, 0, 0.5)');
+		this.fillArc(350, 100, 25, 0, 270, false, ALIGN.CENTER.BOTTOM);
+
+		this.fillStyle('rgba(0, 0, 255, 0.5)');
+		this.fillCircle(550, 100, 25, ALIGN.RIGHT.TOP);
+
+		this.fillStyle('rgba(0, 255, 0, 0.5)');
+		this.fillCircle(550, 100, 25, ALIGN.RIGHT.MIDDLE);
+
+		this.fillStyle('rgba(255, 0, 0, 0.5)');
+		this.fillCircle(550, 100, 25, ALIGN.RIGHT.BOTTOM);
+
+		this.fillStyle('rgba(0, 0, 255, 0.5)');
+		this.fillEllipse(750, 100, 100, 50, ALIGN.LEFT.TOP);
+
+		this.fillStyle('rgba(0, 255, 0, 0.5)');
+		this.fillEllipse(750, 100, 100, 50, ALIGN.CENTER.MIDDLE);
+
+		this.fillStyle('rgba(255, 0, 0, 0.5)');
+		this.fillEllipse(750, 100, 100, 50, ALIGN.RIGHT.BOTTOM);
+	});
+
+    </script>
+</body>
+</html>

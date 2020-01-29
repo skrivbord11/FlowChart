@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Gradients</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+
+	new Canvas('canvas', 0, function() {
+		// Clear the canvas
+		this.clear();
+
+		// Save current state
+		this.save();
+
+		// First method, create a linear gradient from 20x0 to 220x0
+		var gradient = this.createLinearGradient(0, 0, 200, 0);
+
+		// Add three stops along the way from red-green-blue
+		gradient.addColorStop(0.0, '#FF0000');
+		gradient.addColorStop(0.5, '#00FF00');
+		gradient.addColorStop(1.0, '#0000FF');
+
+		// Set the fill style to use the gradient
+		this.fillStyle(gradient);
+
+		this.fillRect(50, 50, 200, 100);
+
+		// Restore the state as it was before setting the gradient style
+		this.restore();
+
+		// Alternate shorter way to define the same effect
+		// Note that color stop points can be set the same way for createLinearGradient()
+		this.beginLinearGradientFill(0, 0, 0, 30, {
+			0.0: 'rgb(5, 5, 20)',
+			1.0: 'rgb(15, 15, 60)'
+		});
+
+		//this.fillRoundedRect(400, 50, 100, 30, 8, ALIGN.CENTER.MIDDLE);
+		this.fillRect(400, 80, 200, 60, ALIGN.CENTER.MIDDLE);
+
+		// End the gradient
+		this.endGradient();
+
+		// You can use beginLinearGradient to start gradient for both fill and stoke
+		this.beginLinearGradient(0, 0, 0, 30, {
+			0.0: 'rgb(15, 15, 50)',
+			1.0: 'rgb(5, 5, 20)'
+		});
+
+		this.fillRect(400, 80, 192, 52, ALIGN.CENTER.MIDDLE);
+
+		// End the gradient, next calls to filling something wont be gradiented
+		this.endGradient();
+
+		// Begin radial gradient fill
+		// The inner red circle starts at -10x-10 from center and has a radius of 10
+		// The outer green-to-blue circle is centered at 0x0 and has a radius of 50
+		this.beginRadialGradient(-10, -10, 10, 0, 0, 50, {
+			0.0: 'rgba(255, 0, 0, 1)',
+			0.5: 'rgba(0, 255, 0, 0.5)',
+			1.0: 'rgba(0, 0, 255, 0)'
+		});
+
+		// Fill a circle with a radius of 50 using the gradient style
+		this.fillCircle(550, 100, 50);
+
+		// End the gradient (may be omitted, we wont draw anything else anyway
+		this.endGradient();
+	});
+
+    </script>
+</body>
+</html>

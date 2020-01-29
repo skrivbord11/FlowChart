@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Real touch</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+
+	var canvas = new Canvas('canvas', 0, function() {
+		// Clear the canvas
+		this.clear();
+	});
+
+	canvas.setTouchEmulatesMouse(true);
+
+	canvas.onMouseDown = function(x, y) {
+		this.fillStyle('#00FF00');
+		this.fillCircle(x, y, 10, ALIGN.CENTER.MIDDLE);
+	}
+
+	canvas.onMouseUp = function(x, y) {
+		this.fillStyle('#0000FF');
+		this.fillCircle(x, y, 5, ALIGN.CENTER.MIDDLE);
+	}
+
+	canvas.onMouseMove = function(x, y) {
+		this.fillStyle('#FF0000');
+		this.fillCircle(x, y, 3, ALIGN.CENTER.MIDDLE);
+	}
+
+	</script>
+</body>
+</html>

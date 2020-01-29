@@ -1,0 +1,318 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Hello World</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<script type="text/javascript" src="lib/box2d/box2d.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+
+	var canvas = new Canvas('canvas', 60, function(frameDuration, totalDuration, frameNumber) {
+		this.scene.scale = 100.0 / 2.0 + this.mouse.scroll;
+		
+		if (this.firstFrame) {
+			this.scene.cameraX = -25.0;
+			this.scene.cameraY = 0.0;
+
+			var worldAABB = new b2AABB();
+			worldAABB.lowerBound.Set(-100.0, -100.0);
+			worldAABB.upperBound.Set(100.0, 100.0);
+
+			var gravity = new b2Vec2(0.0, -9.8);
+			var world = new b2World(worldAABB, gravity, true);
+
+			this.scene.world = world;
+		}
+
+		var cameraSpeed = 10.0 / this.scene.scale;
+
+		if (this.scene.vehicle != null) {
+			if (this.kb.isDown(KC.A)) {
+				this.scene.vehicle.rearWheel.ApplyTorque(30);
+				this.scene.vehicle.frontWheel.ApplyTorque(30);
+			} else if (this.kb.isDown(KC.D)) {
+				this.scene.vehicle.rearWheel.ApplyTorque(-30);
+				this.scene.vehicle.frontWheel.ApplyTorque(-30);
+			} else if (this.kb.isDown(KC.W)) {
+				//this.scene.lastBox.ApplyForce(new b2Vec2(0, 50), this.scene.lastBox.GetPosition());
+				//this.scene.lastBox.ApplyForce(new b2Vec2(0, 150), this.scene.lastBox.GetPosition());
+			} else if (this.kb.isDown(KC.S)) {
+				//this.scene.lastBox.ApplyForce(new b2Vec2(0, -50), this.scene.lastBox.GetPosition());
+				//this.scene.lastBox.ApplyForce(new b2Vec2(0, -150), this.scene.lastBox.GetPosition());
+			}
+		}
+
+		if (this.kb.isDown(KC.LEFT)) {
+			this.scene.cameraX -= cameraSpeed;
+		} else if (this.kb.isDown(KC.RIGHT)) {
+			this.scene.cameraX += cameraSpeed;
+		}
+
+		if (this.kb.isDown(KC.UP)) {
+			this.scene.cameraY -= cameraSpeed;
+		} else if (this.kb.isDown(KC.DOWN)) {
+			this.scene.cameraY += cameraSpeed;
+		}
+
+		this.scene.world.Step(frameDuration / 1000.0, 20);
+		//this.scene.world.Step(1.0 / 60.0, 20); // stable at all fps but things slow down with fps
+
+		// Clear the canvas
+		this.clear();
+
+		this.fillColor('#FFFFFF');
+		this.fillText('Arrow keys to pan around', 20, 20);
+		this.fillText('Mouse wheel scroll to zoom in/out', 20, 36);
+		this.fillText('A/D to move the vehicle', 20, 52);
+		this.fillText('Left/right mouse button to spawn a crate/ball', 20, 68);
+		
+		// Render the scene
+		if (typeof(this.scene.render) == 'function') {
+			this.scene.render();
+		}
+
+		this.fillColor('#FFFFFF');
+		this.font('12px Arial');
+		this.fillText('FPS: ' + this.fps, this.width - 10, 10, ALIGN.RIGHT.TOP);
+	});
+
+	canvas.onMouseDown = function(x, y, button) {
+		var pos = this.scene.translateMouse(x, y);
+
+		if (button == 1) {
+			this.scene.createCrate(pos.x, pos.y, 1, 1, 'media/crate.jpg');
+		} else if (button == 3) {
+			this.scene.createDisc(pos.x, pos.y, 0.5, false, 'media/ball.png');
+		}
+	}
+
+	canvas.onContextMenu = function(event) {
+		return false; // disable context menu
+	}
+
+	canvas.scene.translateMouse = function(x, y) {
+		return {
+			x : x / this.scale + this.cameraX,
+			y : (this.canvas.height / this.scale) - y / this.scale - this.cameraY
+		}
+	}
+
+	canvas.scene.createCrate = function(x, y, width, height, filename) {
+		var bodyDef = new b2BodyDef();
+		bodyDef.position.Set(x, y);
+
+		var body = this.world.CreateBody(bodyDef);
+		body.w = width / 2.0;
+		body.h = height / 2.0;
+
+		var shapeDef = new b2PolygonDef();
+		shapeDef.SetAsBox(body.w, body.h);
+		shapeDef.restitution = 0.3;
+		//shapeDef.restitution = 1.0;
+		shapeDef.density = 2.0;
+		shapeDef.friction = 0.9;
+		body.CreateShape(shapeDef);
+		body.SetMassFromShapes();
+
+		/*
+		body.visual = this.canvas.renderToCanvas(120, 120, 0, function() {
+			this.fillColor('#CCCCCC');
+			this.fillRect(0.5, 0.5, this.width, this.height);
+		});
+		*/
+
+		if (filename != null) {
+			this.canvas.loadImage(filename, function(image) {
+				body.visual = image;
+			});
+		}
+
+		return body;
+	}
+
+	canvas.scene.createDisc = function(x, y, radius, fixed, filename) {
+		var bodyDef = new b2BodyDef();
+		bodyDef.position.Set(x, y);
+
+		var body = this.world.CreateBody(bodyDef);
+
+		var shapeDef = new b2CircleDef();
+		if (!fixed) shapeDef.density = 1.0;
+		shapeDef.radius = radius;
+		shapeDef.restitution = 0.2;
+		
+		body.CreateShape(shapeDef);
+		body.SetMassFromShapes();
+
+		if (filename != null) {
+			this.canvas.loadImage(filename, function(image) {
+				body.visual = image;
+			});
+		}
+
+		return body;
+	};
+
+	canvas.scene.createGround = function() {
+		var groundBodyDef = new b2BodyDef();
+		groundBodyDef.position.Set(0.0, 0.5);
+
+		var groundBody = this.world.CreateBody(groundBodyDef);
+		groundBody.w = 50.0;
+		groundBody.h = 0.5;
+
+		var groundShapeDef = new b2PolygonDef();
+		groundShapeDef.restitution = 0.0;
+		groundShapeDef.friction = 0.5;
+		groundShapeDef.density = 1.0;
+		groundShapeDef.SetAsBox(groundBody.w, groundBody.h);
+
+		groundBody.CreateShape(groundShapeDef);
+		groundBody.SynchronizeShapes();
+	}
+
+	canvas.scene.createVehicle = function() {
+		var frame = this.createCrate(-10, 5, 4, 1);
+		var rearWheel = this.createDisc(-12, 5, 1);
+		var frontWheel = this.createDisc(-8, 5, 1);
+		var joint = new b2RevoluteJointDef();
+		
+		joint.Initialize(rearWheel, frame, rearWheel.GetWorldCenter());
+		joint.collideConnected = false;
+		this.world.CreateJoint(joint);
+
+		joint.Initialize(frontWheel, frame, frontWheel.GetWorldCenter());
+		joint.collideConnected = false;
+		this.world.CreateJoint(joint);
+
+		return {
+			frame: frame,
+			rearWheel: rearWheel,
+			frontWheel: frontWheel
+		}
+	}
+
+	canvas.scene.render = function() {
+		this.canvas.save();
+		this.canvas.setTransform(this.scale, 0, 0, -this.scale, 0, this.canvas.height);
+		this.canvas.translate(-this.cameraX, this.cameraY);
+
+		for (var body = this.world.m_bodyList; body; body = body.m_next) {
+			if (body.GetMass() == 0) {
+				this.canvas.fillColor('#333333');
+				this.canvas.strokeColor('#333333');
+			} else {
+				this.canvas.fillColor('#666666');
+				this.canvas.strokeColor('#666666');
+			}
+
+			for (var shape = body.GetShapeList(); shape != null; shape = shape.GetNext()) {
+				if (body.visual != null) {
+					this.canvas.save();
+					this.canvas.translate(body.GetPosition().x, body.GetPosition().y);
+					this.canvas.rotate(body.GetAngle());
+
+					//var aabb = null;
+					//var aabb = shape.ComputeAABB(body.GetXForm());
+					//console.dir(aabb);
+					//break;
+
+					switch (shape.m_type) {
+						case b2Shape.e_circleShape:
+							var radius = shape.GetRadius();
+
+							this.canvas.c.drawImage(body.visual, 0, 0, body.visual.width, body.visual.height, -radius, -radius, radius * 2, radius * 2);
+						break;
+
+						case b2Shape.e_polygonShape:
+							this.canvas.c.drawImage(body.visual, 0, 0, body.visual.width, body.visual.height, -body.w, -body.h, body.w * 2, body.h * 2);
+						break;
+					}
+
+					this.canvas.restore();
+				} else {
+					switch (shape.m_type) {
+						case b2Shape.e_circleShape: {
+							this.canvas.save();
+							this.canvas.lineWidth(2.0 / this.scale);
+							this.canvas.beginPath();
+
+							var pos = shape.GetBody().GetPosition();
+							var r = shape.GetRadius();
+							var segments = 32.0;
+							var theta = 0.0;
+							var dtheta = 2.0 * Math.PI / segments;
+							// draw circle
+							this.canvas.moveTo(pos.x + r, pos.y);
+
+							for (var i = 0; i < segments; i++) {
+								var d = new b2Vec2(r * Math.cos(theta), r * Math.sin(theta));
+								var v = b2Math.AddVV(pos, d);
+
+								this.canvas.lineTo(v.x, v.y);
+								theta += dtheta;
+							}
+
+							this.canvas.lineTo(pos.x + r, pos.y);
+
+							// draw radius
+							this.canvas.moveTo(pos.x, pos.y);
+							var ax = shape.GetBody().GetXForm().R.col1;
+							var pos2 = new b2Vec2(pos.x + r * ax.x, pos.y + r * ax.y);
+							this.canvas.lineTo(pos2.x, pos2.y);
+
+							this.canvas.stroke();
+							this.canvas.restore();
+						}
+						break;
+
+						case b2Shape.e_polygonShape: {
+							this.canvas.save();
+							this.canvas.beginPath();
+
+							var tV = b2Math.AddVV(shape.GetBody().GetPosition(), b2Math.b2MulMV(shape.GetBody().GetXForm().R, shape.m_vertices[0]));
+							this.canvas.moveTo(tV.x, tV.y);
+
+							for (var i = 0; i < shape.m_vertexCount; i++) {
+								var v = b2Math.AddVV(shape.GetBody().GetPosition(), b2Math.b2MulMV(shape.GetBody().GetXForm().R, shape.m_vertices[i]));
+								this.canvas.lineTo(v.x, v.y);
+							}
+
+							this.canvas.lineTo(tV.x, tV.y);
+							this.canvas.fill();
+							this.canvas.restore();
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		this.canvas.restore();
+	}
+
+	canvas.scene.createGround();
+	canvas.scene.vehicle = canvas.scene.createVehicle();
+
+    </script>
+</body>
+</html>

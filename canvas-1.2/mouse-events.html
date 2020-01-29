@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Mouse events</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+
+	var canvas = new Canvas('canvas', 0, function() {
+		// clear the canvas
+		this.clear();
+
+		// draw a grid
+		this.strokeStyle('#333333');
+		this.grid(10, 10)
+		this.strokeStyle('#006600');
+		this.grid(50, 50);
+	});
+	
+	canvas.onMouseDown = function(x, y, button) {
+		// show different color circle based on the button pressed, the larger circle
+		this.fillStyle('#' + (button == 1 ? 'FF' : '00') + (button == 2 ? 'FF' : '00') + (button == 3 ? 'FF' : '00'));
+		this.fillCircle(x, y, 10, ALIGN.CENTER.MIDDLE);
+
+		if (button == 3) {
+			return false;
+		}
+	}
+
+	canvas.onMouseUp = function(x, y, button) {
+		// show different color circle based on the button pressed, the smaller circle
+		this.fillStyle('#' + (button == 3 ? 'FF' : '00') + (button == 1 ? 'FF' : '00') + (button == 2 ? 'FF' : '00'));
+		this.fillCircle(x, y, 5, ALIGN.CENTER.MIDDLE);
+	}
+
+	// create a layer to show mouse position, not using animation nor main render function
+	var positionLayer = canvas.createLayer('position', 0);
+
+	positionLayer.onMouseMove = function(x, y) {
+		// clear the canvas and set stroke color to red
+		this.clear();
+		this.strokeColor('#FF0000');
+
+		// stroke a crossing at mouse coordinates
+		this.strokeLine(x, 0, x, this.height);
+		this.strokeLine(0, y, this.width, y);
+
+		// display the coordinates as text also
+		this.fillColor('#FF0000');
+		this.font('12px Arial');
+		this.fillText(x + 'x' + y, x - 4, y + 4, ALIGN.RIGHT.TOP);
+
+		// render a single frame
+		this.renderSingleFrame();
+	}
+
+	// create a layer to display mouse button and scroll states
+	var buttonLayer = canvas.createLayer('buttons');
+
+	// define a new method of given layer canvas that draws the render button state
+	buttonLayer.renderButtonState = function() {
+		// clear the canvas and draw a dark mouse background rounded rectangle
+		this.clear();
+		this.font('18px Arial bold');
+		this.fillColor('#333333');
+		this.fillRoundedRect(this.width - 10, 10, 140, 200, 10, ALIGN.RIGHT.TOP);
+
+		// draw left mouse button with blue background when down, dark gray otherwise
+		this.mouse.left ? this.fillColor('#000099') : this.fillColor('#666666');
+		this.fillRoundedRect(this.width - 40 * 2 - 20, 20, 40, 80, 4, ALIGN.RIGHT.TOP);
+
+		// draw middle mouse button with blue background when down, dark gray otherwise
+		this.mouse.middle ? this.fillColor('#000099') : this.fillColor('#666666');
+		this.fillRoundedRect(this.width - 40 * 1 - 20, 20, 40, 80, 4, ALIGN.RIGHT.TOP);
+
+		// draw right mouse button with blue background when down, dark gray otherwise
+		this.mouse.right ? this.fillColor('#000099') : this.fillColor('#666666');
+		this.fillRoundedRect(this.width - 40 * 0 - 20, 20, 40, 80, 4, ALIGN.RIGHT.TOP);
+
+		// draw mouse wheel background
+		this.fillColor('#CCCCCC');
+		this.fillRect(this.width - 40 * 1 - 30, 30, 20, 60, ALIGN.RIGHT.TOP);
+
+		// draw mouse wheel position
+		this.fillColor('#000000');
+		this.fillCircle(this.width - 40 * 1 - 40, 60 - this.mouse.scroll, 5, ALIGN.CENTER.MIDDLE);
+	};
+
+	// trigger the state drawing method when mouse button state changes
+	buttonLayer.onMouseDown = buttonLayer.onMouseUp = buttonLayer.onMouseScroll = function() {
+		this.renderButtonState();
+	}
+
+	// disable context menu on topmost layer
+	buttonLayer.onContextMenu = function(event) {
+		return false;
+	}
+
+	// render the initial buttons state
+	buttonLayer.renderButtonState();
+
+	</script>
+</body>
+</html>

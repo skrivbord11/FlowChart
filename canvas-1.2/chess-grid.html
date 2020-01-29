@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Canvas examples :: Chess grid</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script type="text/javascript" src="lib/canvas/canvas-1.2.dev.js"></script>
+	<style type="text/css">
+
+	* {
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	body {
+		margin: 0px;
+		background-color: #000000;
+	}
+	#canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	</style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+
+	new Canvas('canvas', 0, function() {
+		// paint the background white
+		this.fillColor('#FFFFFF');
+		this.translate(0, 0); // translate to 0x0 to clear all
+		this.fillRect(0, 0, this.width, this.height); // fill the whole background to white
+		this.translate(0.5, 0.5); // translate back to half a pixel to get solid lines
+
+		// calculate cell size based on window size
+		var cellSize = Math.min(this.width, this.height) / 10;
+
+		// set styles
+		this.fillColor('#000000');
+		this.strokeColor('#000000');
+		this.font((cellSize / 3) + 'px Arial');
+
+		// stroke the outer rectangle
+		this.strokeRect(cellSize, cellSize, cellSize * 8, cellSize * 8);
+
+		// stroke the black cells and row/column indexes
+		for (var x = 0; x < 8; x++) {
+			for (y = 0; y < 8; y++) {
+				// fill the black rect if either x or y bot noth both divide by 2
+				if (x % 2 ^ y % 2) {
+					this.fillRect(cellSize + x * cellSize, cellSize + y * cellSize, cellSize, cellSize);
+				}
+
+				// show the y-indexes
+				if (x == 0) {
+					this.fillText(8 - y, cellSize * 0.5, cellSize + y * cellSize + cellSize * 0.5, ALIGN.CENTER.MIDDLE);
+				}
+			}
+
+			// show the x-indexes
+			this.fillText(x + 1, cellSize + x * cellSize + cellSize * 0.5, cellSize + 8 * cellSize + cellSize * 0.5, ALIGN.CENTER.MIDDLE);
+		}
+	});
+
+    </script>
+</body>
+</html>
